@@ -10,7 +10,7 @@ export default function App() {
   ])
   const [inputText, setInputText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [showSettings, setShowSettings] = useState(false) // Toggle API settings
+  const [showSettings, setShowSettings] = useState(false)
 
   const chatEndRef = useRef(null)
 
@@ -102,7 +102,6 @@ export default function App() {
     link.click()
     URL.revokeObjectURL(url)
   }
-
   const clearChat = () => {
     if (window.confirm('Clear the conversation?')) {
       setMessages([{ role: 'assistant', content: 'Conversation cleared. Awaiting input.' }])
@@ -121,13 +120,11 @@ export default function App() {
         background: '#09090b',
         overflow: 'hidden'
       }}>
-        {/* Base deep gradient */}
         <div style={{
           position: 'absolute',
           inset: 0,
           background: 'radial-gradient(ellipse at 70% 20%, rgba(192,132,252,0.08) 0%, transparent 60%)'
         }} />
-        {/* Floating Nebula Orbs */}
         <div style={{
           position: 'absolute',
           width: '700px', height: '700px',
@@ -153,7 +150,6 @@ export default function App() {
           transform: 'translate(-50%, -50%)',
           animation: 'pulse 14s ease-in-out infinite'
         }} />
-        {/* Subtle grain for texture */}
         <div style={{
           position: 'absolute',
           inset: 0,
@@ -218,8 +214,7 @@ export default function App() {
                 fontSize: '0.9rem',
                 fontFamily: 'JetBrains Mono, monospace',
                 outline: 'none',
-                marginBottom: '14px',
-                transition: 'border-color 0.2s'
+                marginBottom: '14px'
               }}
             />
             <button
@@ -286,10 +281,7 @@ export default function App() {
               padding: '30px 10px 10px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px',
-              // Custom scrollbar styling
-              scrollbarWidth: 'thin',
-              scrollbarColor: 'rgba(255,255,255,0.1) transparent'
+              gap: '20px'
             }}>
               {messages.map((msg, idx) => (
                 <div key={idx} style={{
@@ -305,8 +297,7 @@ export default function App() {
                   fontSize: '1rem',
                   fontFamily: 'Inter, sans-serif',
                   lineHeight: '1.6',
-                  wordWrap: 'break-word',
-                  boxShadow: msg.role === 'user' ? '0 8px 25px -8px rgba(192,132,252,0.3)' : '0 4px 12px rgba(0,0,0,0.1)'
+                  wordWrap: 'break-word'
                 }}>
                   {msg.content}
                 </div>
@@ -340,7 +331,6 @@ export default function App() {
               boxShadow: '0 -8px 30px rgba(0,0,0,0.3)'
             }}>
               
-              {/* 1. Model Switcher (Pill-Shaped & Right in the Action) */}
               <select
                 value={selectedModel}
                 onChange={e => setSelectedModel(e.target.value)}
@@ -367,7 +357,6 @@ export default function App() {
                 <option value="google/gemini-1.5-flash">Gemini 1.5 Flash</option>
               </select>
 
-              {/* 2. Text Input */}
               <input
                 type="text"
                 placeholder="Message MIRAGE..."
@@ -389,7 +378,7 @@ export default function App() {
                 }}
               />
 
-              {/* 3. Settings Hub (API, Export, Clear) */}
+              {/* Settings Hub */}
               <div style={{ position: 'relative' }}>
                 <button
                   onClick={() => setShowSettings(!showSettings)}
@@ -406,7 +395,6 @@ export default function App() {
                   ⚙️
                 </button>
 
-                {/* Floating Settings Menu */}
                 {showSettings && (
                   <div style={{
                     position: 'absolute',
@@ -492,7 +480,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* 4. Send Button */}
               <button
                 onClick={handleSend}
                 disabled={isLoading}
@@ -506,8 +493,7 @@ export default function App() {
                   fontWeight: 600,
                   fontFamily: 'Syne, sans-serif',
                   cursor: isLoading ? 'default' : 'pointer',
-                  opacity: isLoading ? 0.5 : 1,
-                  transition: 'opacity 0.2s'
+                  opacity: isLoading ? 0.5 : 1
                 }}
               >
                 {isLoading ? '...' : 'Send'}
@@ -517,7 +503,6 @@ export default function App() {
         )}
       </div>
 
-      {/* COMPLEX BACKGROUND ANIMATIONS */}
       <style>{`
         @keyframes float1 {
           0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
@@ -534,7 +519,6 @@ export default function App() {
           50% { transform: translate(-50%, -50%) scale(1.3) rotate(180deg); }
         }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
           width: 6px;
         }
@@ -545,4 +529,12 @@ export default function App() {
           background: rgba(255,255,255,0.1);
           border-radius: 6px;
         }
-        ::-webkit-scrollbar-th
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(255,255,255,0.2);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap');
+      `}</style>
+    </>
+  )
+}
