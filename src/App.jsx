@@ -5,17 +5,20 @@ import { callAI } from './callAI';
 import { exportChat } from './utils/export';
 import ShaderWallpaper from './components/ShaderWallpaper';
 import { Mic, Square, FileText, Download, Plus, Send } from 'lucide-react';
+import { fetchProviderModels } from './modelFetcher';
 
 export default function App() {
   const [theme, setTheme] = useState(THEMES.mirage);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [model, setModel] = useState('openrouter/free');
+  const [model, setModel] = useState('');
   const [provider, setProvider] = useState('openrouter');
   const [apiKey, setApiKey] = useState(localStorage.getItem('mirage_api_key') || '');
   const [isLoading, setIsLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [fetchedModels, setFetchedModels] = useState([]);
+  const [loadingModels, setLoadingModels] = useState(false);
   const chatEndRef = useRef(null);
 
   const isDark = theme.name === 'Void';
@@ -30,6 +33,19 @@ export default function App() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Dynamic Model Fetching
+  useEffect(() => {
+    const fetchModels = async () => {
+      if (!apiKey) { setFetchedModels([]); return; }
+      setLoadingModels(true);
+      const models = await fetchProviderModels(provider, apiKey);
+      setFetchedModels(models);
+      if (models.length > 0 && !model) setModel(models[0].id);
+      setLoadingModels(false);
+    };
+    fetchModels();
+  }, [apiKey, provider]);
 
   const sendMessage = async () => {
     if (!input.trim() || !apiKey) return alert('Enter an API Key first');
@@ -87,6 +103,10 @@ export default function App() {
     recognition.onerror = () => setIsListening(false);
   };
 
+  // Group dynamic models into Free/Paid
+  const freeModels = fetchedModels.filter(m => m.free || m.pricePrompt === 0);
+  const paidModels = fetchedModels.filter(m => !m.free && m.pricePrompt > 0);
+
   return (
     <>
       <ShaderWallpaper accentColor={theme.colors.accent} bgColor={theme.colors.bg} />
@@ -94,14 +114,10 @@ export default function App() {
         {/* Header with pills */}
         <div className="header">
           <div className="pill-select">
-            <span>Model</span>
-            <select value={model} onChange={(e) => setModel(e.target.value)}>
+            <span>Provider</span>
+            <select value={provider} onChange={(e) => setProvider(e.target.value)}>
               {Object.entries(PROVIDERS).map(([key, p]) => (
-                <optgroup key={key} label={p.name} style={{ color: p.color }}>
-                  {p.models.map(m => (
-                    <option key={m.id} value={m.id}>{m.name} {m.free ? '🆓' : '💳'}</option>
-                  ))}
-                </optgroup>
+                <option key={key} value={key} style={{ color: p.color }}>{p.name}</option>
               ))}
             </select>
           </div>
@@ -142,6 +158,27 @@ export default function App() {
             <button className="btn-icon" onClick={() => setDrawerOpen(!drawerOpen)}>
               <Plus size={24} strokeWidth={1.5} />
             </button>
+            <div className="pill-select" style={{ display: 'flex', gap: '8px', padding: '0 12px', background: 'transparent', boxShadow: 'none' }}>
+              <span>Model</span>
+              <select 
+                value={model} 
+                onChange={(e) => setModel(e.target.value)} 
+                style={{ width: 'auto', minWidth: '120px' }}
+              >
+                {loadingModels && <option value="">Loading models...</option>}
+                {!loadingModels && freeModels.length === 0 && paidModels.length === 0 && <option value="">No models fetched</option>}
+                {freeModels.length > 0 && <optgroup label="🆓 Free Models"> 
+                  {freeModels.map(m => (
+                    <option key={m.id} value={m.id}>{m.name} ($0.00/1M)</option>
+                  ))}
+                </optgroup>}
+                {paidModels.length > 0 && <optgroup label="💎 Paid Models">
+                  {paidModels.map(m => (
+                    <option key={m.id} value={m.id}>{m.name} (${m.pricePrompt.toFixed(2)}/1M)</option>
+                  ))}
+                </optgroup>}
+              </select>
+            </div>
             <input 
               type="text" 
               placeholder="Message MIRAGE..." 
