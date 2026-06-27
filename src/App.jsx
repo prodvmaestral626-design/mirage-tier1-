@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { PROVIDERS, PERSONAS } from './providers';
 import { THEMES } from './themes';
 import { callAI } from './callAI';
-import { exportChat } from './utils/export';
+import { exportChat } from './utils/export.js';
 import ShaderWallpaper from './components/ShaderWallpaper';
 import { Mic, Square, FileText, Download, Plus, Send } from 'lucide-react';
 import { fetchProviderModels } from './modelFetcher';
